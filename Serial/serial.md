@@ -2,11 +2,11 @@
 
 # Serial Communication with Additel Calibrators and Devices
 
-Many of the older Additel devices can communicate over RS-232 cables with Serial Communication.  This method of communication is very simple and effective, provided you get the paramaters correct.
+Many of the older Additel devices can communicate over RS-232 cables with Serial Communication.  In addition, a few of our devices, even though they use USB, still communicate using Serial Communication.  This method of communication is very simple and effective, provided you get the paramaters correct.
 
 ## Setup
 
-First, make sure you get the driver for your particular RS-232 cable installed.  If you don't have the driver, your system is not going to be able to communicate with the device.
+First, make sure you get the driver for your particular RS-232 cable installed.  If you don't have the driver, your system is not going to be able to communicate with the device.  There is a chance that Windows will automatically install the driver for your cable, but for most cable manufacturers, you will need to install it from their website.  Make sure you get it directly from the manufacturers website - and not another website pretending to offer drivers, but really offering you malware.
 
 In this example, we are going to use Python 3 (in this case, version 3.9.1, although newer versions should work fine too), which you can download [here](https://www.python.org/downloads/) or [here](https://www.microsoft.com/en-us/p/python-39/9p7qfqmjrfp7).
 
@@ -67,11 +67,12 @@ port = serial.Serial(   port='COM1',
                         timeout=1   )
 ```
 
-3) Once you get the serial port set up, you need to write some data to the port.  Unfortunately, the port only likes binary data so you need to convert it to bytes before sending (other serial libraries may not need to do this).  You can find these commands in your product's user manual on [additel.com](https://www.additel.com) most of the time. (Go to the Products section and look for your product.  Then check the Resources tab.)  If you can't find them there, [send us an email](https://www.additel.com/contactus.html/) and we'll get the commands to you if they are available.  Commands for Additel units tend to come in one of two structures:
+3) Once you get the serial port set up, you need to write some data to the port.  Unfortunately, the port only likes binary data so you need to convert it to bytes before sending the command (other serial libraries may not require you to do this).  You can find these commands [here](https://additel.com/download/programming_commands/Programming_Commands_for_Additel_Units.zip), if they are available.  Commands for Additel units over serial tend to come in one of two structures:
 
-* The first structure is called an SCPI command.  To describe how this structure works, we will reference TODO
+* The first command structure is called SCPI.  SCPI looks like this: `MEAS:PRES1?\r\n`.  It consists of several segments separated by colons that describe what an operation does (in this case, `MEAS:PRES1` measures pressure from Sensor 1).  Commands asking for information are followed by a `?` indicating they are a query.  Paramaters are separarated from the command and other paramaters by a space.  Finally, the command terminates with `\r\n`.
 
-* The second structure (as shown in the code below), is a typical command. To describe how this structure works, we will reference `255:R:OCODE:1\r\n`, which is a command from the [ADT681 manual](https://www.additel.com/download/user%20manual/User%20Manual/681%20User%20Manual.pdf) in Appendix 1.  You'll notice different parts of this command are separated by colons.  Each part has a separate meaning.  Here's a description of each of the separate parts. `Device Address : Read or Write : Command : Paramater 1 : Paramater 2 : Paramater 3 : Paramater 4 \r\n`.  For `Device Address`, we always reccomed you use `255` (as it will always work with our devices).  For `Read or Write`, `Command` and any of the `Paramater`s, you'll need to look up the information in your devices user manual Appendix as we described above.  `Read or Write` is a `R` or `W` (although both will not be available for all commands).  `Command` is a 4-6 character string that represents an action we want to do.  For example, in the case of `OCODE` below, if used with an ADT681, it gets the unit's serial number and returns it to you.  `Paramater`s are required for some commands which require you to send information to your unit.  For example, if you had an ADT681 and you wanted to set your guage's internal recording (using the `OFTIM` command) to 1 record every 10 seconds, you could stick the paramater `10` at the end like this: `255:R:OFTIM:10\r\n`.  Multiple paramater will be separated by colons, just like the other parts of the command. If there are no paramaters, it is best to end the command with a `1` (as seen with `OCODE`).  Finally, at the very end of your command, put a `\r\n`, which lets your device know that the command has ended.
+
+* The second command structure doesn't have a name.  It looks like this: `255:R:OCODE:1\r\n`.  It consists of several segments, separated by colons.  The first segment `255` references the address (we always reccomend using `255`).  The next is usually an `R` or `W` (for read or write).  The third is the actual command - in this case, it is `OCODE`, a command which gets a unit's serial number (this command will differ from device to device).  Then, after that you put paramaters, separated by colons (if you have no paramaters, just stick a `1` there).  Finally, the command terminates with `\r\n`.
 
 ```python
 # encode the command to get the device SN in bytes, and write it to the device
@@ -88,5 +89,7 @@ response = port.read(size=500)
 response_as_str = bytes.decode(response, 'utf-8')
 print(response_as_str)
 ```
+
+And that is pretty much it.  You can now communicate with your Additel devices with Serial Communication.
 
 [Jump back to main readme.](../readme.md)
