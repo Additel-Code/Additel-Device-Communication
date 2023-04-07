@@ -4,6 +4,8 @@
 
 Many of the newer Additel devices can communicate over USB cables with USB Communication.  These cables can be USB-A to USB-A or USB-A to USB-B.  This method of communication is a little more complicated than Serial Communication.
 
+Note that not all devices that have a USB cable will use USB communication.  Some of them will use Serial Communication.  You will need to figure out which one your device uses.  As a general rules, if a device uses a USB to USB cable, and has a colored screen, it uses USB Communication.  Otherwise it uses Serial Communication.
+
 ## Setup
 
 First, you need to install Additel's USB Driver that is built to specifically communicate with Additel devices.  The easiest way to do this is to install [Additel Land](https://additel.com/product-detail.html/land-pressure-software/) and scan for the device.  The first time you try to interact with the device in Additel Land, it will install the driver.
