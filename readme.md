@@ -23,7 +23,7 @@ Different Additel devices use different communication types.  Not every communic
     - ADT226/227/260/273
     - ADT673/686
     - ADT760/761A/762/762W/780
-3) **[Network Communication](/Network/network.md)** - Communication over Wifi or through an Ethernet (RJ-45) Cable.
+3) **[Network Communication (TCP/IP)](/Network/network.md)** - Communication over Wifi or through an Ethernet (RJ-45) Cable.
     - ADT673/686
     - ADT760/761A/762/762W
     - ADT780
