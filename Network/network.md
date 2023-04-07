@@ -1,6 +1,6 @@
 [Jump back to main readme.](../readme.md)
 
-# Network Communication with Additel Calibrators and Devices
+# Network Communication (TCP/IP) with Additel Calibrators and Devices
 
 Many of the newer Additel devices can communicate with 3rd party programs over the Network.  In most cases, this means Wifi, although some of our devices also support RJ-45 (Ethernet) cables.  This method of communication is probably the most simple, as there is no drivers to install, and the tools you need are all part of the standard libraries of most programming languages.
 
