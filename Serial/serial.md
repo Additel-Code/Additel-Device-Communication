@@ -2,7 +2,7 @@
 
 # Serial Communication with Additel Calibrators and Devices
 
-Many of the older Additel devices can communicate over RS-232 cables with Serial Communication.  In addition, a few of our devices, even though they use USB, still communicate using Serial Communication.  This method of communication is very simple and effective, provided you get the paramaters correct.
+Many of the older Additel devices can communicate over RS-232 cables with Serial Communication.  In addition, a few of our devices, even though they use USB cables, still communicate using Serial Communication.  This method of communication is very simple and effective, provided you get the paramaters correct.
 
 ## Setup
 
