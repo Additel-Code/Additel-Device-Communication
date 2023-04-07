@@ -38,4 +38,5 @@ Different Additel devices use different communication types.  Not every communic
     - ADT680
     
 Note 1:  Some Additel devices also can communicate with HART protocol, but that mainly refers to device-to-device communication (which isn't described in this guide).
+
 Note 2:  There are a few other advanced communication methods not talked about in this guide (in addition to bluetooth).  This is mainly because they are difficult, and can feel incomplete at times.  We don't have any plans to write guides for them in the future though.
