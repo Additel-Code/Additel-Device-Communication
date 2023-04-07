@@ -1,88 +1,132 @@
+[Jump back to main readme.](../readme.md)
+
 # USB Communication with Additel Calibrators and Devices
 
-Many of the newer Additel devices can communicate over USB cables with USB Communication.  These cables can be USB-A to USB-A or USB-A to USB-B.  This method of communication is very simple and effective.s
+Many of the newer Additel devices can communicate over USB cables with USB Communication.  These cables can be USB-A to USB-A or USB-A to USB-B.  This method of communication is a little more complicated than Serial Communication.
 
 ## Setup
 
-First, make sure you get the driver for your particular RS-232 cable installed.  If you don't have the driver, your system is not going to be able to communicate with the device.
+First, you need to install Additel's USB Driver that is built to specifically communicate with Additel devices.  The easiest way to do this is to install [Additel Land](https://additel.com/product-detail.html/land-pressure-software/) and scan for the device.  The first time you try to interact with the device in Additel Land, it will install the driver.
 
 In this example, we are going to use Python 3 (in this case, version 3.9.1, although newer versions should work fine too), which you can download [here](https://www.python.org/downloads/) or [here](https://www.microsoft.com/en-us/p/python-39/9p7qfqmjrfp7).
 
-You'll also need to install pySerial, by following the instructions [here](https://pyserial.readthedocs.io/en/latest/pyserial.html#installation).  pySerial is a 3rd party library that makes communicating with serial devices really easy.
+You will need a libusb-1.0 dll in order to communicate with a libusb device.  The easiest way to get this it to download it [here](https://github.com/pyusb/pyusb).  Save it to the same directory as the example proram.
+
+Lastly, you'll also need to install pyusb, by following the instructions [here](https://github.com/pyusb/pyusb#installing).  pyusb is a 3rd party library that makes communicating with USB devices reasonably easy.
 
 ## Example
 
 ```python
-# import the pyserial library
-import serial
+# import the pyusb library
+import usb.core
+from usb.backend import libusb1
 
-# open a serial port
-port = serial.Serial(   port='COM1',
-                        baudrate=9600,
-                        bytesize=serial.EIGHTBITS,
-                        parity=serial.PARITY_NONE,
-                        stopbits=serial.STOPBITS_ONE,
-                        timeout=1   )
+# download the latest libusb-1.0 dll you can download from here:  https://libusb.info/  - then use the absolute path below as the backend
+be = libusb1.get_backend(find_library=lambda x: "C:\\Stick_The_Absolute_Path_To_Lib_USB_1.0_DLL_Here")
 
+# connect to the USB device - you will need to make sure you use the correct vendor and product id (you can ask us for it)
+device = usb.core.find(idVendor=0x2E19, idProduct=0x02F8)
 
-# encode the command to get the device SN in bytes, and write it to the device
-command = "255:R:OCODE:1\r\n"
-command_in_bytes = bytes(command, 'utf-8')
-port.write(command_in_bytes)
+# if the usb device exists
+if device is not None:
 
-# read the first 500 characters (or less if it times out), convert it to a string, and print it
-response = port.read(size=500)
-response_as_str = bytes.decode(response, 'utf-8')
-print(response_as_str)
+    # set the device configuration, then initialize it
+    device.set_configuration()
+    configuration = device.get_active_configuration()
+    initialization = configuration[(0,0)]
+
+    # get the out endpoint, which we will use to send commands out to the device
+    endpoint_out = usb.util.find_descriptor(initialization, custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT)
+
+    # get the in endpoint, which we will use to recieve commands in from the device
+    endpoint_in = usb.util.find_descriptor(initialization, custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN)
+
+    # if both endpoints exist
+    if endpoint_out is not None and endpoint_in is not None:
+
+        # create a command and write it to the USB endpoint
+        command = 'MEAS:PRES1?\r\n'
+        endpoint_out.write(command)
+
+        # try to read a response
+        # note that some commands (like 'SYST:KLOCK ON\r\n') will not have a response, so this action may timeout with an error (which is why we have a try block)
+        try:
+            response = device.read(endpoint_in.bEndpointAddress, endpoint_in.wMaxPacketSize)
+            response_as_str = bytearray(response).decode('utf-8')
+            print(response_as_str)
+        except Exception:
+            pass
 ```
 
 Let's go over this example step by step:
 
-1)  First, we get the pySerial library loaded.
+1)  First, we get the pyusb library loaded.
 
 ```python
-# import the pyserial library
-import serial
+# import the pyusb library
+import usb.core
+from usb.backend import libusb1
 ```
 
-2) Next, we open the serial port.  This is probably the hardest part, because you need to make sure you open the serial port with the correct settings.  These settings are determined in different ways.  For example:
-
-* The Port is automatically generated by your computer once you plug in your RS232 cable and install it's driver (if you don't have a driver installed, you can't interact with the cable).  On Windows, this looks like `COM1` or `COM2`.  On other platforms, it will probably be `/dev/ttyS1` or `/dev/ttyS2`.  You can see a list of these generated ports by using pySerial's `serial.tools.list_ports`, or on Windows, by going to Device Manager, and looking under the `Ports (COM & LPT)` section.
-
-* The Baud Rate is set by your Additel device.  You can oftentimes set it via going into the device settings.  To learn how to do this, check out your device manual on [additel.com](https://www.additel.com).  The default for all Additel devices is `9600`, so if you can't figure out what it is that's a good place to start.
-
-* The Bytes Size and Stop Bits can be changed on some Additel devices, but not on others.  The default for many Additel devices is bytesize of `8` or `7`, and stopbits of `1` or `2`, so try a few combinations of those.
-
-* The Parity is always `None`.
+2) Next, we set up the libusb backend.  This will reference the DLL you downloaded in the setup section earlier.  You will need to provide an absolute path to the DLL for this code to work.
 
 ```python
-# open a serial port
-port = serial.Serial(   port='COM1',
-                        baudrate=9600,
-                        bytesize=serial.EIGHTBITS,
-                        parity=serial.PARITY_NONE,
-                        stopbits=serial.STOPBITS_ONE,
-                        timeout=1   )
+# download the latest libusb-1.0 dll you can download from here:  https://libusb.info/  - then use the absolute path below as the backend
+be = libusb1.get_backend(find_library=lambda x: "C:\\Stick_The_Absolute_Path_To_Lib_USB_1.0_DLL_Here")
 ```
 
-1) Once you get the serial port set up, you need to write some data to the port.  Unfortunately, the port only likes binary data so you need to convert it to bytes before sending (other serial libraries may not need to do this).  You can find these commands in your product's user manual on [additel.com](https://www.additel.com) most of the time. (Go to the Products section and look for your product.  Then check the Resources tab.)  If you can't find them there, [send us an email](https://www.additel.com/contactus.html/) and we'll get the commands to you if they are available.  Commands for Additel units tend to come in one of two structures:
-
-* The first structure is called an SCPI command.  To describe how this structure works, we will reference TODO
-
-* The second structure (as shown in the code below), is a typical command. To describe how this structure works, we will reference `255:R:OCODE:1\r\n`, which is a command from the [ADT681 manual](https://www.additel.com/download/user%20manual/User%20Manual/681%20User%20Manual.pdf) in Appendix 1.  You'll notice different parts of this command are separated by colons.  Each part has a separate meaning.  Here's a description of each of the separate parts. `Device Address : Read or Write : Command : Paramater 1 : Paramater 2 : Paramater 3 : Paramater 4 \r\n`.  For `Device Address`, we always reccomed you use `255` (as it will always work with our devices).  For `Read or Write`, `Command` and any of the `Paramater`s, you'll need to look up the information in your devices user manual Appendix as we described above.  `Read or Write` is a `R` or `W` (although both will not be available for all commands).  `Command` is a 4-6 character string that represents an action we want to do.  For example, in the case of `OCODE` below, if used with an ADT681, it gets the unit's serial number and returns it to you.  `Paramater`s are required for some commands which require you to send information to your unit.  For example, if you had an ADT681 and you wanted to set your guage's internal recording (using the `OFTIM` command) to 1 record every 10 seconds, you could stick the paramater `10` at the end like this: `255:R:OFTIM:10\r\n`.  Multiple paramater will be separated by colons, just like the other parts of the command. If there are no paramaters, it is best to end the command with a `1` (as seen with `OCODE`).  Finally, at the very end of your command, put a `\r\n`, which lets your device know that the command has ended.
+3) Next, you need to ask the library to find the USB device.  USB devices are identified by a vendor id and a product id, and you will need both.  This can be found on Windows by going into device manager and looking up the USB device.  If you cannot find these numbers, you can instead [contact us](https://www.additel.com/contactus.html/) and we'll get you the numbers you need (they is one set of numbers for each Additel instrument).  Make sure to check the USB device you asked for exists before proceeding onwards with your program.
 
 ```python
-# encode the command to get the device SN in bytes, and write it to the device
-command = "255:R:OCODE:1\r\n"
-command_in_bytes = bytes(command, 'utf-8')
-port.write(command_in_bytes)
-```
+# connect to the USB device - you will need to make sure you use the correct vendor and product id (you can ask us for it)
+device = usb.core.find(idVendor=0x2E19, idProduct=0x02F8)
 
-4)  Finally you can recieve the response from the Additel device through the port.  pySerial works by specifying an amount of characters you'd like to recieve, and also has a timeout if things take too long (other libraries may do this differently).  The data is returned as bytes, and you need to turn it into a string before printing it.
+# if the usb device exists
+if device is not None:
+```
+4) Next, set the USB device's configuration.  We can just use the default configuration of (0,0).
 
 ```python
-# read the first 500 characters (or less if it times out), convert it to a string, and print it
-response = port.read(size=500)
-response_as_str = bytes.decode(response, 'utf-8')
-print(response_as_str)
+# set the device configuration, then initialize it
+device.set_configuration()
+configuration = device.get_active_configuration()
+initialization = configuration[(0,0)]
 ```
+
+5)  Then, we need to get the endpoints.  Endpoints are very much like the programatic concept of 'streams' - you have a data in endpoint, and a data out endpoint, and you will probably need both.  Make sure both endpoints exist before proceeding on with your program.
+
+```python
+# get the out endpoint, which we will use to send commands out to the device
+endpoint_out = usb.util.find_descriptor(initialization, custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT)
+
+# get the in endpoint, which we will use to recieve commands in from the device
+endpoint_in = usb.util.find_descriptor(initialization, custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN)
+
+# if both endpoints exist
+if endpoint_out is not None and endpoint_in is not None:
+```
+
+6)  After the Device and Endpoint are set up, you can start sending USB commands.  USB Commands will be sent with a command structure called SCPI.  SCPI looks like this: `MEAS:PRES1?\r\n.` It consists of several segments separated by colons that describe what an operation does (in this case, `MEAS:PRES1` measures pressure from Sensor 1). Commands asking for information are followed by a `?` indicating they are a query. Paramaters are separarated from the command and other paramaters by a space. Finally, the command terminates with `\r\n`.
+
+```python
+# create a command and write it to the USB endpoint
+command = 'MEAS:PRES1?\r\n'
+endpoint_out.write(command)
+```
+
+7)  Lastly, you can read the response from your unit.  Note that some commands will not have a response, and so you may recieve a timeout.  The best way to deal with this is with a `try` block.  Any responses recieved will have data returned as bytes, and so you will need to turn it into a string before printing it.
+
+```python
+# try to read a response
+# note that some commands (like 'SYST:KLOCK ON\r\n') will not have a response, so this action may timeout with an error (which is why we have a try block)
+try:
+  response = device.read(endpoint_in.bEndpointAddress, endpoint_in.wMaxPacketSize)
+  response_as_str = bytearray(response).decode('utf-8')
+  print(response_as_str)
+except Exception:
+  pass
+```
+
+And that is pretty much it. You can now communicate with your Additel devices with USB Communication.
+
+[Jump back to main readme.](../readme.md)
