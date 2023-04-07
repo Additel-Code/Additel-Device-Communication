@@ -14,28 +14,24 @@ If you have any questions, please feel free to [contact us](https://www.additel.
 
 Different Additel devices use different communication types.  Not every communication type is available for every device.  You'll need to see which types your device supports.  Click on the links below to jump to the guide section for the specific type of communication you want to support.
 
-1) **[Serial Communication](/Serial/serial.md)** - Communication over a RS232 cable.
-   - ADT220/221/222/223
-   - ADT672/673/681
-   - ADT761
-   - ADT780
-   - ADT685/686 (ordered optionally)
+1) **[Serial Communication](/Serial/serial.md)** - Communication over a RS232 cable.  (We also have a few devices that can optionally communicate over an RS485 cable)
+   - ADT220/221/222/223/226Ex/227Ex
+   - ADT672/681/685
+   - ADT673/686 (ordered optionally)
+   - ADT761/780
 2) **[USB Communication](/USB/usb.md)** - Communication over a USB type A, type B, or type C cable.
-    - ADT273
-    - ADT673/685/686
-    - ADT760/761A
-    - ADT780
+    - ADT226/227/260/273
+    - ADT673/686
+    - ADT760/761A/762/762W/780
 3) **[Network Communication](/Network/network.md)** - Communication over Wifi or through an Ethernet (RJ-45) Cable.
-    - ADT673/685/686
-    - ADT760/761A
+    - ADT673/686
+    - ADT760/761A/762/762W
     - ADT780
 4) **Bluetooth Communication** - While Additel Link uses this method of communication, we don't support any 3rd party programs using Bluetooth to communicate at this time.
-    - ADT226/227
-    - ADT273
-    - ADT282/286
+    - ADT226/227/226Ex/227Ex/260/273/282/286
     - ADT673/685/686
+    - ADT761A/762/762W
     - ADT850/875/878
-    - ADT761A
 5) **No Communciation Method Available** - Unfortunately, some of our devices don't have ways to communicate with 3rd party software, and have to be paired up with special hardware or other Additel devices.
     - ADT158
     - ADT160/161
