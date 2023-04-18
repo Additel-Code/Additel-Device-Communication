@@ -12,7 +12,7 @@ First, you need to install Additel's USB Driver that is built to specifically co
 
 In this example, we are going to use Python 3 (in this case, version 3.9.1, although newer versions should work fine too), which you can download [here](https://www.python.org/downloads/) or [here](https://www.microsoft.com/en-us/p/python-39/9p7qfqmjrfp7).
 
-You will need a libusb-1.0 dll in order to communicate with a libusb device.  The easiest way to get this it to download it [here](https://github.com/pyusb/pyusb).  Save it to the same directory as the example proram.
+You will need a libusb-1.0 dll in order to communicate with a libusb device.  The easiest way to get this it to download it [here](https://github.com/pyusb/pyusb).  Save it to the same directory as the example program.
 
 Lastly, you'll also need to install pyusb, by following the instructions [here](https://github.com/pyusb/pyusb#installing).  pyusb is a 3rd party library that makes communicating with USB devices reasonably easy.
 
