@@ -15,7 +15,7 @@ You'll also need to install Bleak, by following the instructions [here](https://
 ## Example
 
 ```python
-# the framework we use for Bluetooth Communication requires asynchronous functions ,so we use asyncio for htis
+# the framework we use for Bluetooth Communication requires asynchronous functions ,so we use asyncio for this
 import asyncio
 
 # Bleak has a Bluetooth Scanner and a Bluetooth Client class (and we will need both)
