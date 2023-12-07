@@ -27,7 +27,7 @@ Different Additel devices use different communication types.  Not every communic
     - ADT673/686
     - ADT760/761A/762/762W
     - ADT780
-4) **Bluetooth Communication** - While Additel Link uses this method of communication, we don't support any 3rd party programs using Bluetooth to communicate at this time.
+4) **[Bluetooth Low Energy Communication](/Bluetooth/bluetooth.md)** - Communicate over Bluetooth Low Energy.  **Please note that this guide is a work in progress, and not fully complete yet.**
     - ADT226/227/226Ex/227Ex/260/273/282/286
     - ADT673/685/686
     - ADT761A/762/762W
