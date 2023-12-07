@@ -132,7 +132,7 @@ async def callback(sender, data_as_bytearray):
 await client.start_notify(notification_characteristic_UUID, callback)
 ```
 
-1)  Each of our Bluetooth devices in addition has a 'Write Characteristic', which allows us to send commands to the device.  Responses will be recieved by the callback talked about in Step 9.
+10)  Each of our Bluetooth devices in addition has a 'Write Characteristic', which allows us to send commands to the device.  Responses will be recieved by the callback talked about in Step 9.
 ```python
 # We can send commands thorugh the 'Write Characteristic' of the Bluetooth Device
 # We must send the commands as a bytearray
@@ -141,7 +141,7 @@ command_in_bytes =  bytes(command, 'utf-8')
 await client.write_gatt_char(write_characteristic_UUID, command_in_bytes)
 ```
 
-1)  Last of all, in order to wait for the response from Step 10, we sleep this thread for a bit.  this gives time for the callback talked about in Step 9 to recieve and print the response to the command we sent in Step 10.
+11)  Last of all, in order to wait for the response from Step 10, we sleep this thread for a bit.  this gives time for the callback talked about in Step 9 to recieve and print the response to the command we sent in Step 10.
 ```python
 # This is just here so we wait for the responses to the callback from earlier
 await asyncio.sleep(1)
