@@ -108,7 +108,7 @@ endpoint_in = usb.util.find_descriptor(initialization, custom_match=lambda e: us
 if endpoint_out is not None and endpoint_in is not None:
 ```
 
-6)  After the Device and Endpoint are set up, you can start sending USB commands.  USB Commands will be sent with a command structure called SCPI.  SCPI looks like this: `MEAS:PRES1?\r\n.` It consists of several segments separated by colons that describe what an operation does (in this case, `MEAS:PRES1` measures pressure from Sensor 1). Commands asking for information are followed by a `?` indicating they are a query. Paramaters are separarated from the command and other paramaters by a space. Finally, the command terminates with `\r\n`.
+6)  After the Device and Endpoint are set up, you can start sending USB commands.  USB Commands will be sent with a command structure called SCPI.  SCPI looks like this: `MEAS:PRES1?\r\n.` It consists of several segments separated by colons that describe what an operation does (in this case, `MEAS:PRES1` measures pressure from Sensor 1). Commands asking for information are followed by a `?` indicating they are a query. Paramaters are separarated from the command and other paramaters by a comma. Finally, the command terminates with `\r\n`.
 
 ```python
 # create a command and write it to the USB endpoint

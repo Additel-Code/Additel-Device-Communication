@@ -62,7 +62,7 @@ s.settimeout(1)
 s.connect((ip_address, port))
 ```
 
-4) Once you get the socket set up, you need to write some data to it.  Network Commands will be sent with a command structure called SCPI. SCPI looks like this: `MEAS:PRES1?\r\n`. It consists of several segments separated by colons that describe what an operation does (in this case, `MEAS:PRES1` measures pressure from Sensor 1). Commands asking for information are followed by a `?` indicating they are a query. Paramaters are separarated from the command and other paramaters by a space. Finally, the command terminates with `\r\n`.
+4) Once you get the socket set up, you need to write some data to it.  Network Commands will be sent with a command structure called SCPI. SCPI looks like this: `MEAS:PRES1?\r\n`. It consists of several segments separated by colons that describe what an operation does (in this case, `MEAS:PRES1` measures pressure from Sensor 1). Commands asking for information are followed by a `?` indicating they are a query. Paramaters are separarated from the command and other paramaters by a comma. Finally, the command terminates with `\r\n`.
 
 ```python
 # send the command we want to send, in bytes
